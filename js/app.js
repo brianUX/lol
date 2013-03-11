@@ -233,7 +233,7 @@ $(function(){
 		});
 	
 		var app = new AppRouter();
-		Backbone.history.start({ pushState: true })
+		Backbone.history.start();
 		
 	// end router
 	
