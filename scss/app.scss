@@ -1,3 +1,4 @@
+@import "compass";
 @import "settings";
 @import "foundation";
 
@@ -11,6 +12,7 @@ body {
   	left: -50%; 
   	width: 200%; 
 	height: 200%;
+	z-index:-999999999;
 	img {
 		position: absolute; 
 	  	top: 0; 
@@ -27,6 +29,10 @@ body {
 			top:1px;
 		}
 	}
+}
+
+#error, #error h1 {
+	color:#fff;
 }
 
 

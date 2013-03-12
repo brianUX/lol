@@ -17,7 +17,13 @@ $(function(){
 			},
 			search: function() {
 				var query = $('input#query').val();
-				app.navigate("/tumblr/"+query+"", {trigger: true});
+				query.replace(/\s+/g, '+').toLowerCase();
+				//check if url or tag
+				if (query.indexOf('.') > -1) {
+					app.navigate("/"+query+"", {trigger: true});
+				} else {
+					app.navigate("/tagged/"+query+"", {trigger: true});
+				}
 				return false;
 			}
 		});
@@ -29,7 +35,7 @@ $(function(){
 				"click img" : "next"
 			},
 			initialize: function() {
-				_.bindAll(this, "fetchGifs", "next", "previous", "keydown", "fetchMoreGifs");
+				_.bindAll(this, "fetchGifs", "next", "previous", "keydown", "fetchMoreGifs", "firstGif");
 				$(document).on('keydown', this.keydown);
 				$('.empty').empty();
 				this.fetchGifs();
@@ -37,86 +43,89 @@ $(function(){
 			fetchGifs: function() {				
 				var self = this;
 				if (this.options.url) {
-					var url = "http://api.tumblr.com/v2/blog/" + this.options.url + "/posts?type=photo&limit=50";
 					$.ajax({
 					    type: 'GET',
-					    url: url,
+					    url: "http://api.tumblr.com/v2/blog/" + this.options.url + "/posts?",
 					    dataType: 'jsonp',
 					    data: {
 					        api_key: 'fmCi0cMluKIabZEGPyUmaX3pDMA6VApivcTN6artFbU405Sv3K',
-					        jsonp: 'fetchTumblrGifs'
+					        jsonp: 'fetchTumblrGifs',
+							type: 'photo',
+							limit: '50'
 					    }
 					});
 					fetchTumblrGifs = function(data) {
-						self.fetchMoreGifs(data.response.total_posts);
-						var data = data.response.posts;
-						for (var i = 0; i < data.length; i++) {
-							var photos = data[i].photos;
-							self.render(photos);
+						console.log(data)
+						if (data.meta.status === 200) {
+							var posts = data.response.posts;
+							for (var i = 0; i < posts.length; i++) {
+								var photos = posts[i].photos;
+								var tags = posts[i].tags;
+								console.log(tags)
+								self.render(photos,tags);
+							}
+							if (posts.length === 50) {
+								self.fetchMoreGifs(data.response.total_posts);
+							}
+						} else if (data.meta.status === 404) {
+						  	new ErrorView({
+								title: "Bummer Bro",
+								message: ""+self.options.url+" doesn't appear to be a tumblr."
+							});
 						}
 					}
+					self.firstGif();
 				}
 				if (this.options.tag) {
-					var url = "http://api.tumblr.com/v2/tagged?tag=" + this.options.tag + "&limit=50";
 					$.ajax({
 					    type: 'GET',
-					    url: url,
+					    url: "http://api.tumblr.com/v2/tagged?",
 					    dataType: 'jsonp',
 					    data: {
 					        api_key: 'fmCi0cMluKIabZEGPyUmaX3pDMA6VApivcTN6artFbU405Sv3K',
-					        jsonp: 'fetchTagGifs'
+					        jsonp: 'fetchTagGifs',
+							tag: this.options.tag 
 					    }
 					});
 					fetchTagGifs = function(data) {
-						if (data.response.length > 0) {
-							var last = data.response[data.response.length-1];
-							var timeStamp = last.timestamp;
-							var size = $('#gifs img').size();
-							if (size < 100) {
-								self.fetchMoreGifs(timeStamp);
-							} else {
-								return false;
+						var posts = data.response;
+						for (var i = 0; i < posts.length; i++) {
+							if (posts[i].photos) {
+								var photos = posts[i].photos;
+								var tags = posts[i].tags;
+								self.render(photos,tags);
 							}
 						}
-						var data = data.response;
-						for (var i = 0; i < data.length; i++) {
-							if (data[i].photos) {
-								var photos = data[i].photos;
-								self.render(photos);
-							}
+						self.firstGif();
+						if (posts.length > 0) {
+							var last = data.response[data.response.length-1];
+							var timeStamp = last.timestamp;
+							self.fetchMoreGifs(timeStamp);
 						}
 					}
 				}
 			},
-			render: function(photos) {
+			render: function(photos,tags) {
 				var self = this;
 				for (var i = 0; i < photos.length; i++) {
 					var data = {
-						src: photos[i].original_size.url
+						src: photos[i].original_size.url,
 					}
 					$(self.el).append(self.template(data));
 				}
-				//load first 5
-				$("#gifs img").slice(0, 5).each(function() {
-					var src = $(this).attr('id');
-					$(this).attr('src', src);
-					$(this).removeClass('unloaded');
-				});
-				//first image
-				var first = $('#gifs img:first');
-				first.removeClass('hide');
 			},
 			next: function() {
-				var current = $('#gifs img:visible');
+				console.log('next')
+				var current = $('#gifs .active');
+				current.addClass('hide').removeClass('active');
 				var next = current.next('img');
 				if (next.length > 0) {
-					current.addClass('hide');
 					if (next.hasClass('unloaded')) {
 						var src = next.attr('id');
 						next.attr('src', src);
 						next.removeClass('unloaded');
 					}
-					next.removeClass('hide');
+					next.removeClass('hide').addClass('active');
 					var nextLoad = $('#gifs img.unloaded:first');
 					if (nextLoad.length > 0) {
 						var src = nextLoad.attr('id');
@@ -124,21 +133,21 @@ $(function(){
 						nextLoad.removeClass('unloaded');
 					}
 				} else {
-					current.addClass('hide');
-					$('#gifs img:first').removeClass('hide');
+					$('#gifs img:first').removeClass('hide').addClass('active');
 				}
 			},
 			previous: function() {
-				var current = $('#gifs img:visible');
+				console.log('previous')
+				var current = $('#gifs .active');
+				current.addClass('hide').removeClass('active');
 				var next = current.prev('img');
 				if (next.length > 0) {
-					current.addClass('hide');
 					if (next.hasClass('unloaded')) {
 						var src = next.attr('id');
 						next.attr('src', src);
 						next.removeClass('unloaded');
 					}
-					next.removeClass('hide');
+					next.removeClass('hide').addClass('active');
 					var nextLoad = $('#gifs img.unloaded:last');
 					if (nextLoad.length > 0) {
 						var src = nextLoad.attr('id');
@@ -146,14 +155,13 @@ $(function(){
 						nextLoad.removeClass('unloaded');
 					}
 				} else {
-					current.addClass('hide');
 					var last = $('#gifs img:last');
 					if (last.hasClass('unloaded')) {
 						var src = last.attr('id');
 						last.attr('src', src);
 						last.removeClass('unloaded');
 					}
-					$('#gifs img:last').removeClass('hide');
+					$('#gifs img:last').removeClass('hide').addClass('active');
 				}
 			},
 			keydown: function(e) {
@@ -169,15 +177,16 @@ $(function(){
 				var self = this;
 				if (this.options.url) {
 					for (var i = 50; i < count; i = i+50) {
-						console.log(i)
-						var url = "http://api.tumblr.com/v2/blog/" + this.options.url + "/posts?type=photo&limit=50&offset=" + i + ""
 						$.ajax({
 						    type: 'GET',
-						    url: url,
+						    url: "http://api.tumblr.com/v2/blog/" + this.options.url + "/posts?",
 						    dataType: 'jsonp',
 						    data: {
 						        api_key: 'fmCi0cMluKIabZEGPyUmaX3pDMA6VApivcTN6artFbU405Sv3K',
-						        jsonp: 'fetchMoreTumblrGifs'
+						        jsonp: 'fetchMoreTumblrGifs',
+								type: 'photo',
+								limit: '50',
+								offset: i
 						    }
 						});
 					}
@@ -190,17 +199,67 @@ $(function(){
 					}
 				}
 				if (this.options.tag) {
-					var url = "http://api.tumblr.com/v2/tagged?tag=" + this.options.tag + "&before=" + count + "";
 					$.ajax({
 					    type: 'GET',
-					    url: url,
+					    url: "http://api.tumblr.com/v2/tagged?",
 					    dataType: 'jsonp',
 					    data: {
 					        api_key: 'fmCi0cMluKIabZEGPyUmaX3pDMA6VApivcTN6artFbU405Sv3K',
-					        jsonp: 'fetchTagGifs'
+					        jsonp: 'fetchMoreTagGifs',
+							tag: this.options.tag,
+							before: count
 					    }
 					});
+					fetchMoreTagGifs = function(data) {
+						var posts = data.response;
+						for (var i = 0; i < posts.length; i++) {
+							if (posts[i].photos) {
+								var photos = posts[i].photos;
+								var tags = posts[i].tags;
+								self.render(photos,tags);
+							}
+						}
+						if (data.response.length > 0) {
+							var last = data.response[data.response.length-1];
+							var timeStamp = last.timestamp;
+							var size = $('#gifs img').size();
+							if (size < 200) {
+								self.fetchMoreGifs(timeStamp);
+							} else {
+								return false;
+							}
+						}
+					}
 				}
+			},
+			firstGif: function() {
+				//load first 5
+				$("#gifs img").slice(0, 5).each(function() {
+					var src = $(this).attr('id');
+					$(this).attr('src', src);
+					$(this).removeClass('unloaded');
+				});
+				//first gif
+				var first = $("#gifs img:first");
+				first.addClass('active').removeClass('hide');
+			}
+		});
+		
+		//error view
+		ErrorView = Backbone.View.extend({
+			el: $('#error'),
+			template: _.template($('#error-template').html()),
+			initialize: function() {
+			    _.bindAll(this);
+			    $('.empty').empty();
+				this.render();
+			},
+			render: function() {
+				var data = {
+					title: this.options.title,
+					message: this.options.message
+				};
+			  	$(this.el).html(this.template(data));
 			}
 		});
 		
@@ -212,10 +271,11 @@ $(function(){
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				"" : "home",
-				"tumblr/:url" : "tumblr",
-				"tumblr/tagged/:tag" : "tag"
+				":url" : "tumblr",
+				"tagged/:tag" : "tag"
 			},
 			initialize: function() {
+
 		    },
 			home: function() {
 				new SearchView();
@@ -239,6 +299,3 @@ $(function(){
 	
 });
 
-function yep (data) {
-	console.log(data)
-}

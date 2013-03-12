@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
-  <title>lolwtfgif</title>
+  <title>LOLWTFGIF - Fullscreen Animated Gifs</title>
 
   <link rel="stylesheet" href="css/normalize.css" />
   
@@ -16,11 +16,10 @@
 
 </head>
 <body>
-
+	
 	<div id="search"></div>
-	<div id="tumblr">
-		<div id="gifs" class="empty"></div>
-	</div>
+	<div id="error" class="empty"></div>
+	<div id="gifs" class="empty"></div>
 	
 	<script type="text/template" id="search-template">
 		<form>
@@ -32,6 +31,20 @@
 		<% if (src.indexOf('.gif') > 0) { %>
 			<img id="<%= src %>" class="hide gif unloaded" src="">
 		<% } %>
+	</script>
+	
+	<script type="text/template" id="alert-template">
+		<div data-alert class="alert-box">
+		  Keep clicking anywhere to cycle through. Or use the &larr; &amp; &rarr; arrow keys. 
+		  <a href="#" class="close">&times;</a>
+		</div>
+	</script>
+	
+	<script type="text/template" id="error-template">
+		<div class="text-container">
+			<h1><%= title %></h1>
+			<p><%= message %></p> 
+		</div>
 	</script>
 
 	<script>

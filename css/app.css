@@ -5078,20 +5078,21 @@ table tfoot tr td {
   max-width: 800px;
 }
 
-/* line 4, ../scss/app.scss */
+/* line 5, ../scss/app.scss */
 body {
   background: #1e1e1e;
 }
 
-/* line 8, ../scss/app.scss */
+/* line 9, ../scss/app.scss */
 #gifs {
   position: fixed;
   top: -50%;
   left: -50%;
   width: 200%;
   height: 200%;
+  z-index: -999999999;
 }
-/* line 14, ../scss/app.scss */
+/* line 16, ../scss/app.scss */
 #gifs img {
   position: absolute;
   top: 0;
@@ -5102,11 +5103,16 @@ body {
   min-width: 50%;
   min-height: 50%;
 }
-/* line 23, ../scss/app.scss */
+/* line 25, ../scss/app.scss */
 #gifs img:hover {
   cursor: pointer;
 }
-/* line 26, ../scss/app.scss */
+/* line 28, ../scss/app.scss */
 #gifs img:active {
   top: 1px;
+}
+
+/* line 34, ../scss/app.scss */
+#error, #error h1 {
+  color: #fff;
 }
