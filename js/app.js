@@ -38,6 +38,7 @@ $(function(){
 				_.bindAll(this, "fetchGifs", "next", "previous", "keydown", "fetchMoreGifs", "firstGif");
 				$(document).on('keydown', this.keydown);
 				$('.empty').empty();
+				console.log('empty')
 				this.fetchGifs();
 			},
 			fetchGifs: function() {				
@@ -282,8 +283,7 @@ $(function(){
 		var AppRouter = Backbone.Router.extend({
 			routes: {
 				"" : "home",
-				":url" : "tumblr",
-				"tag/:tag" : "tag"
+				":query" : "tumblr"
 			},
 			initialize: function() {
 
@@ -291,15 +291,20 @@ $(function(){
 			home: function() {
 				new SearchView();
 			},
-			tumblr: function(url) {
-				new TumblrView({
-					url: url
-				});
-			},
-			tag: function(tag) {
-				new TumblrView({
-					tag: tag
-				});
+			tumblr: function(query) {
+				if (this.currentTumblrView) {
+					this.currentTumblrView.undelegateEvents();
+				}
+				if (query.indexOf('.') > -1) {
+					var view = new TumblrView({
+						url: query
+					});
+				} else {
+					var view = new TumblrView({
+						tag: query
+					});
+				}
+				this.currentTumblrView = view;
 			}
 		});
 	
