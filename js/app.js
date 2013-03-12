@@ -73,6 +73,7 @@ $(function(){
 								message: ""+self.options.url+" doesn't appear to be a tumblr."
 							});
 						}
+						self.firstGif();
 					}
 				}
 				//tag
@@ -102,6 +103,7 @@ $(function(){
 							var timeStamp = last.timestamp;
 							self.fetchMoreGifs(timeStamp);
 						}
+						self.firstGif();
 					}
 				}
 			},
@@ -131,7 +133,6 @@ $(function(){
 							var tags = posts[i].tags;
 							self.render(photos);
 						}
-						self.firstGif();
 					}
 				}
 				//tag
@@ -167,7 +168,6 @@ $(function(){
 								return false;
 							}
 						}
-						self.firstGif();
 					}
 				}
 			},
@@ -186,7 +186,8 @@ $(function(){
 			next: function() {
 				console.log('next')
 				var current = $('#gifs .active');
-				current.addClass('hide').removeClass('active');
+				current.addClass('hide');
+				current.removeClass('active');
 				var next = current.next('.gif');
 				if (next.length > 0) {
 					if (next.hasClass('unloaded')) {
