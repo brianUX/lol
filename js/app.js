@@ -22,7 +22,7 @@ $(function(){
 				if (query.indexOf('.') > -1) {
 					app.navigate("/"+query+"", {trigger: true});
 				} else {
-					app.navigate("/tagged/"+query+"", {trigger: true});
+					app.navigate("/tag/"+query+"", {trigger: true});
 				}
 				return false;
 			}
@@ -42,6 +42,7 @@ $(function(){
 			},
 			fetchGifs: function() {				
 				var self = this;
+				//tumblr
 				if (this.options.url) {
 					$.ajax({
 					    type: 'GET',
@@ -54,14 +55,13 @@ $(function(){
 							limit: '50'
 					    }
 					});
+					//callback
 					fetchTumblrGifs = function(data) {
-						console.log(data)
 						if (data.meta.status === 200) {
 							var posts = data.response.posts;
 							for (var i = 0; i < posts.length; i++) {
 								var photos = posts[i].photos;
 								var tags = posts[i].tags;
-								console.log(tags)
 								self.render(photos,tags);
 							}
 							if (posts.length === 50) {
@@ -74,8 +74,8 @@ $(function(){
 							});
 						}
 					}
-					self.firstGif();
 				}
+				//tag
 				if (this.options.tag) {
 					$.ajax({
 					    type: 'GET',
@@ -87,6 +87,7 @@ $(function(){
 							tag: this.options.tag 
 					    }
 					});
+					//callback
 					fetchTagGifs = function(data) {
 						var posts = data.response;
 						for (var i = 0; i < posts.length; i++) {
@@ -96,7 +97,6 @@ $(function(){
 								self.render(photos,tags);
 							}
 						}
-						self.firstGif();
 						if (posts.length > 0) {
 							var last = data.response[data.response.length-1];
 							var timeStamp = last.timestamp;
@@ -105,76 +105,9 @@ $(function(){
 					}
 				}
 			},
-			render: function(photos,tags) {
-				var self = this;
-				for (var i = 0; i < photos.length; i++) {
-					var data = {
-						src: photos[i].original_size.url,
-					}
-					$(self.el).append(self.template(data));
-				}
-			},
-			next: function() {
-				console.log('next')
-				var current = $('#gifs .active');
-				current.addClass('hide').removeClass('active');
-				var next = current.next('img');
-				if (next.length > 0) {
-					if (next.hasClass('unloaded')) {
-						var src = next.attr('id');
-						next.attr('src', src);
-						next.removeClass('unloaded');
-					}
-					next.removeClass('hide').addClass('active');
-					var nextLoad = $('#gifs img.unloaded:first');
-					if (nextLoad.length > 0) {
-						var src = nextLoad.attr('id');
-						nextLoad.attr('src', src);
-						nextLoad.removeClass('unloaded');
-					}
-				} else {
-					$('#gifs img:first').removeClass('hide').addClass('active');
-				}
-			},
-			previous: function() {
-				console.log('previous')
-				var current = $('#gifs .active');
-				current.addClass('hide').removeClass('active');
-				var next = current.prev('img');
-				if (next.length > 0) {
-					if (next.hasClass('unloaded')) {
-						var src = next.attr('id');
-						next.attr('src', src);
-						next.removeClass('unloaded');
-					}
-					next.removeClass('hide').addClass('active');
-					var nextLoad = $('#gifs img.unloaded:last');
-					if (nextLoad.length > 0) {
-						var src = nextLoad.attr('id');
-						nextLoad.attr('src', src);
-						nextLoad.removeClass('unloaded');
-					}
-				} else {
-					var last = $('#gifs img:last');
-					if (last.hasClass('unloaded')) {
-						var src = last.attr('id');
-						last.attr('src', src);
-						last.removeClass('unloaded');
-					}
-					$('#gifs img:last').removeClass('hide').addClass('active');
-				}
-			},
-			keydown: function(e) {
-				var self = this;
-				if (e.keyCode == 39) {
-					self.next();
-				} 
-				if (e.keyCode == 37) {
-					self.previous();
-				}
-			},
 			fetchMoreGifs: function(count) {
 				var self = this;
+				//tumblr
 				if (this.options.url) {
 					for (var i = 50; i < count; i = i+50) {
 						$.ajax({
@@ -190,14 +123,18 @@ $(function(){
 						    }
 						});
 					}
+					//callback
 					fetchMoreTumblrGifs = function(data) {
-						var data = data.response.posts;
-						for (var i = 0; i < data.length; i++) {
-							var photos = data[i].photos;
+						var posts = data.response.posts;
+						for (var i = 0; i < posts.length; i++) {
+							var photos = posts[i].photos;
+							var tags = posts[i].tags;
 							self.render(photos);
 						}
+						self.firstGif();
 					}
 				}
+				//tag
 				if (this.options.tag) {
 					$.ajax({
 					    type: 'GET',
@@ -210,6 +147,7 @@ $(function(){
 							before: count
 					    }
 					});
+					//callback
 					fetchMoreTagGifs = function(data) {
 						var posts = data.response;
 						for (var i = 0; i < posts.length; i++) {
@@ -229,18 +167,90 @@ $(function(){
 								return false;
 							}
 						}
+						self.firstGif();
 					}
+				}
+			},
+			render: function(photos,tags) {
+				var self = this;
+				for (var i = 0; i < photos.length; i++) {
+					if (photos[i].original_size.url.indexOf('.gif') > 0) {
+						var data = {
+							src: photos[i].original_size.url,
+							tags: tags
+						}
+						$(self.el).append(self.template(data));
+					}
+				}
+			},
+			next: function() {
+				console.log('next')
+				var current = $('#gifs .active');
+				current.addClass('hide').removeClass('active');
+				var next = current.next('.gif');
+				if (next.length > 0) {
+					if (next.hasClass('unloaded')) {
+						var src = next.attr('id');
+						next.find('img').attr('src', src);
+						next.removeClass('unloaded');
+					}
+					next.removeClass('hide').addClass('active');
+					var nextLoad = $('#gifs .unloaded:first');
+					if (nextLoad.length > 0) {
+						var src = nextLoad.attr('id');
+						nextLoad.find('img').attr('src', src);
+						nextLoad.removeClass('unloaded');
+					}
+				} else {
+					$('#gifs .gif:first').removeClass('hide').addClass('active');
+				}
+			},
+			previous: function() {
+				console.log('previous')
+				var current = $('#gifs .active');
+				current.addClass('hide').removeClass('active');
+				var next = current.prev('.gif');
+				if (next.length > 0) {
+					if (next.hasClass('unloaded')) {
+						var src = next.attr('id');
+						next.find('img').attr('src', src);
+						next.removeClass('unloaded');
+					}
+					next.removeClass('hide').addClass('active');
+					var nextLoad = $('#gifs .unloaded:last');
+					if (nextLoad.length > 0) {
+						var src = nextLoad.attr('id');
+						nextLoad.find('img').attr('src', src);
+						nextLoad.removeClass('unloaded');
+					}
+				} else {
+					var last = $('#gifs .gif:last');
+					if (last.hasClass('unloaded')) {
+						var src = last.attr('id');
+						last.find('img').attr('src', src);
+						last.removeClass('unloaded');
+					}
+					$('#gifs img:last').removeClass('hide').addClass('active');
+				}
+			},
+			keydown: function(e) {
+				var self = this;
+				if (e.keyCode == 39) {
+					self.next();
+				} 
+				if (e.keyCode == 37) {
+					self.previous();
 				}
 			},
 			firstGif: function() {
 				//load first 5
-				$("#gifs img").slice(0, 5).each(function() {
+				$("#gifs .gif").slice(0, 5).each(function() {
 					var src = $(this).attr('id');
-					$(this).attr('src', src);
+					$(this).find('img').attr('src', src);
 					$(this).removeClass('unloaded');
 				});
-				//first gif
-				var first = $("#gifs img:first");
+				//show first gif
+				var first = $("#gifs .gif:first");
 				first.addClass('active').removeClass('hide');
 			}
 		});
@@ -272,7 +282,7 @@ $(function(){
 			routes: {
 				"" : "home",
 				":url" : "tumblr",
-				"tagged/:tag" : "tag"
+				"tag/:tag" : "tag"
 			},
 			initialize: function() {
 
