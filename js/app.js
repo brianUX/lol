@@ -2,7 +2,7 @@ $(function(){
 	
 	//views
 	
-		var SearchView = Backbone.View.extend({
+		SearchView = Backbone.View.extend({
 			el: $('#search'),
 			template: _.template($('#search-template').html()),
 			events: {
@@ -28,7 +28,7 @@ $(function(){
 			}
 		});
 		
-		var TumblrView = Backbone.View.extend({
+		TumblrView = Backbone.View.extend({
 			el: $('#gifs'),
 			template: _.template($('#gif-template').html()),
 			events: {
@@ -232,7 +232,7 @@ $(function(){
 						last.find('img').attr('src', src);
 						last.removeClass('unloaded');
 					}
-					$('#gifs img:last').removeClass('hide').addClass('active');
+					last.removeClass('hide').addClass('active');
 				}
 			},
 			keydown: function(e) {
@@ -275,12 +275,11 @@ $(function(){
 			}
 		});
 		
-		
 	//end views	
 	
 	//router
 	
-		var AppRouter = Backbone.Router.extend({
+		AppRouter = Backbone.Router.extend({
 			routes: {
 				"" : "home",
 				":query" : "tumblr"
@@ -308,7 +307,7 @@ $(function(){
 			}
 		});
 	
-		var app = new AppRouter();
+		app = new AppRouter();
 		Backbone.history.start();
 		
 	// end router
