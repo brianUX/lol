@@ -5,7 +5,7 @@
 <head>
 	<meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
-  <title>LOLWTFGIF - Fullscreen Animated Gifs</title>
+  <title>Lolwtfgif, brah.</title>
 
   <link rel="stylesheet" href="css/normalize.css" />
   
@@ -20,11 +20,20 @@
 	<div id="search"></div>
 	<div id="error" class="empty"></div>
 	<div id="gifs" class="empty"></div>
+	<div id="loading"></div>
 	
 	<script type="text/template" id="search-template">
-		<form>
-			<input type="text" value="" id="query">
-		</form>
+		<div id="input">
+			<div class="wrapper">
+				<a class="logo" href="/"><img src="img/logo.png"></a>
+				<form>
+					<input type="text" placeholder="Enter tumblr url or search term">
+				</form>
+				<div class="welcome">
+					<p>create a fullscreen animated gif gallery from any tumblog.</p>
+				</div>
+			</div>
+		</div>
 	</script>
 	
 	<script type="text/template" id="gif-template">
@@ -66,6 +75,7 @@
 	<script src="js/vendor/backbone.js"></script>
 	<script src="js/foundation.min.js"></script>
 	<script src="js/app.js"></script>
+	<script src="js/plugins.js"></script>
 
 
 	<script>

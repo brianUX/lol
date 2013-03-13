@@ -38,13 +38,14 @@ $(function(){
 				_.bindAll(this, "fetchGifs", "next", "previous", "keydown", "fetchMoreGifs", "firstGif");
 				$(document).on('keydown', this.keydown);
 				$('.empty').empty();
-				console.log('empty')
 				this.fetchGifs();
+				new LoadingView();
 			},
 			fetchGifs: function() {				
 				var self = this;
 				//tumblr
 				if (this.options.url) {
+					//update url
 					$.ajax({
 					    type: 'GET',
 					    url: "http://api.tumblr.com/v2/blog/" + this.options.url + "/posts?",
@@ -63,7 +64,7 @@ $(function(){
 							for (var i = 0; i < posts.length; i++) {
 								var photos = posts[i].photos;
 								var tags = posts[i].tags;
-								self.render(photos,tags);
+								self.render(photos,tags,0);
 							}
 							if (posts.length === 50) {
 								self.fetchMoreGifs(data.response.total_posts);
@@ -74,7 +75,6 @@ $(function(){
 								message: ""+self.options.url+" doesn't appear to be a tumblr."
 							});
 						}
-						self.firstGif();
 					}
 				}
 				//tag
@@ -96,7 +96,7 @@ $(function(){
 							if (posts[i].photos) {
 								var photos = posts[i].photos;
 								var tags = posts[i].tags;
-								self.render(photos,tags);
+								self.render(photos,tags,0);
 							}
 						}
 						if (posts.length > 0) {
@@ -104,7 +104,6 @@ $(function(){
 							var timeStamp = last.timestamp;
 							self.fetchMoreGifs(timeStamp);
 						}
-						self.firstGif();
 					}
 				}
 			},
@@ -132,7 +131,7 @@ $(function(){
 						for (var i = 0; i < posts.length; i++) {
 							var photos = posts[i].photos;
 							var tags = posts[i].tags;
-							self.render(photos);
+							self.render(photos,tags,1);
 						}
 					}
 				}
@@ -156,7 +155,7 @@ $(function(){
 							if (posts[i].photos) {
 								var photos = posts[i].photos;
 								var tags = posts[i].tags;
-								self.render(photos,tags);
+								self.render(photos,tags,1);
 							}
 						}
 						if (data.response.length > 0) {
@@ -172,7 +171,7 @@ $(function(){
 					}
 				}
 			},
-			render: function(photos,tags) {
+			render: function(photos,tags,first) {
 				var self = this;
 				for (var i = 0; i < photos.length; i++) {
 					if (photos[i].original_size.url.indexOf('.gif') > 0) {
@@ -182,10 +181,10 @@ $(function(){
 						}
 						$(self.el).append(self.template(data));
 					}
+					self.firstGif();
 				}
 			},
 			next: function() {
-				console.log('next')
 				var current = $('#gifs .active');
 				current.addClass('hide');
 				current.removeClass('active');
@@ -208,7 +207,6 @@ $(function(){
 				}
 			},
 			previous: function() {
-				console.log('previous')
 				var current = $('#gifs .active');
 				current.addClass('hide').removeClass('active');
 				var next = current.prev('.gif');
@@ -245,15 +243,44 @@ $(function(){
 				}
 			},
 			firstGif: function() {
-				//load first 5
-				$("#gifs .gif").slice(0, 5).each(function() {
-					var src = $(this).attr('id');
-					$(this).find('img').attr('src', src);
-					$(this).removeClass('unloaded');
-				});
-				//show first gif
-				var first = $("#gifs .gif:first");
-				first.addClass('active').removeClass('hide');
+				if ($("#gifs .active")[0]) {
+					return false;
+				} else {
+					//load first 5
+					$("#gifs .gif").slice(0, 5).each(function() {
+						var src = $(this).attr('id');
+						$(this).find('img').attr('src', src);
+						$(this).removeClass('unloaded');
+					});
+					//show first gif
+					var first = $("#gifs .gif:first");
+					first.addClass('active').removeClass('hide');
+				}
+			}
+		});
+		
+		//loading view
+		LoadingView = Backbone.View.extend({
+			initialize: function() {
+				var opts = {
+				  lines: 13, // The number of lines to draw
+				  length: 30, // The length of each line
+				  width: 10, // The line thickness
+				  radius: 40, // The radius of the inner circle
+				  corners: 1, // Corner roundness (0..1)
+				  rotate: 0, // The rotation offset
+				  color: '#000', // #rgb or #rrggbb
+				  speed: 1, // Rounds per second
+				  trail: 60, // Afterglow percentage
+				  shadow: true, // Whether to render a shadow
+				  hwaccel: false, // Whether to use hardware acceleration
+				  className: 'spinner', // The CSS class to assign to the spinner
+				  zIndex: 2e9, // The z-index (defaults to 2000000000)
+				  top: 'auto', // Top position relative to parent in px
+				  left: 'auto' // Left position relative to parent in px
+				};
+				var target = document.getElementById('loading');
+				var spinner = new Spinner(opts).spin(target);
 			}
 		});
 		
@@ -282,7 +309,8 @@ $(function(){
 		AppRouter = Backbone.Router.extend({
 			routes: {
 				"" : "home",
-				":query" : "tumblr"
+				":query" : "tumblr",
+				"http://:query" : "tumblr"
 			},
 			initialize: function() {
 
@@ -295,6 +323,9 @@ $(function(){
 					this.currentTumblrView.undelegateEvents();
 				}
 				if (query.indexOf('.') > -1) {
+					if (query.indexOf('http://') > -1) {
+						query.replace("http://", "");
+					}
 					var view = new TumblrView({
 						url: query
 					});
