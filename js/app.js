@@ -46,7 +46,7 @@ $(function(){
 				this.fetchGifs();
 				new LoadingView();
 				this.checkInput();
-				_gaq.push(['_trackPageview']);
+				new PageView();
 			},
 			fetchGifs: function() {				
 				var self = this;
@@ -104,7 +104,6 @@ $(function(){
 					});
 					//callback
 					fetchTagGifs = function(data) {
-						console.log(data)
 						var posts = data.response;
 						for (var i = 0; i < posts.length; i++) {
 							if (posts[i].photos) {
@@ -228,7 +227,7 @@ $(function(){
 				if ($("input#query").is(":visible")) {
 					$("input#query").hide();
 				}
-				_gaq.push(['_trackPageview']);
+				new PageView();
 			},
 			previous: function() {
 				var current = $('#gifs .active');
@@ -259,7 +258,7 @@ $(function(){
 				if ($("input#query").is(":visible")) {
 					$("input#query").hide();
 				}
-				_gaq.push(['_trackPageview']);
+				new PageView();
 			},
 			keydown: function(e) {
 				var self = this;
@@ -365,6 +364,13 @@ $(function(){
 			}
 		});
 		
+		//page view
+		PageView = Backbone.View.extend({
+			initialize: function() {
+				_gaq.push(['_trackPageview', window.location.href]);
+			}
+		})
+		
 	//end views	
 	
 	//router
@@ -373,11 +379,11 @@ $(function(){
 			routes: {
 				"" : "home",
 				":query" : "tumblr",
-				"http://:query" : "tumblr",
-				"?url=:query" : "tumblr"
+				"http://:query" : "tumblr"
 			},
 			initialize: function() {
 				new SearchView();
+				this.catch();
 		    },
 			home: function() {
 				this.tumblr(0);
@@ -403,6 +409,24 @@ $(function(){
 					});
 				}
 				this.currentTumblrView = view;
+			},
+			catch: function() {
+				var self = this;
+				var urlParams = {};
+				(function() {
+				    var e,
+				        a = /\+/g,  // Regex for replacing addition symbol with a space
+				        r = /([^&=]+)=?([^&]*)/g,
+				        d = function(s) { return decodeURIComponent(s.replace(a, ' ')); },
+				        q = window.location.search.substring(1);
+
+				    while (e = r.exec(q))
+				       urlParams[d(e[1])] = d(e[2]);
+				})();
+				url = urlParams['url'];
+				if (url) {
+					this.tumblr(url);
+				}
 			}
 		});
 	
