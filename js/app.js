@@ -6,10 +6,11 @@ $(function(){
 			el: $('#search'),
 			template: _.template($('#search-template').html()),
 			events: {
-				"submit form" : "search"
+				"submit form" : "search",
+				"click a" : "toggleInput"
 			}, 
 			initialize: function() {
-				_.bindAll(this, "search");
+				_.bindAll(this, "search", "toggleInput");
 				this.render();
 			},
 			render: function() {
@@ -19,12 +20,16 @@ $(function(){
 				var query = $('input#query').val();
 				query.replace(/\s+/g, '+').toLowerCase();
 				//check if url or tag
-				if (query.indexOf('.') > -1) {
-					app.navigate("/"+query+"", {trigger: true});
-				} else {
-					app.navigate("/tag/"+query+"", {trigger: true});
-				}
+			    app.navigate("#/"+query+"", {trigger: true});
 				return false;
+			},
+			toggleInput: function() {
+				var x = $("input#query");
+				x.toggle();
+				if (x.is(":visible")) {
+					x.focus();
+					x.select();
+				}
 			}
 		});
 		
@@ -35,11 +40,13 @@ $(function(){
 				"click img" : "next"
 			},
 			initialize: function() {
-				_.bindAll(this, "fetchGifs", "next", "previous", "keydown", "fetchMoreGifs", "firstGif");
+				_.bindAll(this, "fetchGifs", "next", "previous", "keydown", "fetchMoreGifs", "firstGif", "reset");
 				$(document).on('keydown', this.keydown);
 				$('.empty').empty();
 				this.fetchGifs();
 				new LoadingView();
+				this.checkInput();
+				_gaq.push(['_trackPageview']);
 			},
 			fetchGifs: function() {				
 				var self = this;
@@ -69,9 +76,15 @@ $(function(){
 							if (posts.length === 50) {
 								self.fetchMoreGifs(data.response.total_posts);
 							}
+							if (posts.length < 1) {
+								new ErrorView({
+									title: "Bummer",
+									message: ""+self.options.url+" doesn't have any gifs."
+								});
+							}
 						} else if (data.meta.status === 404) {
 						  	new ErrorView({
-								title: "Bummer Bro",
+								title: "Aw, Man.",
 								message: ""+self.options.url+" doesn't appear to be a tumblr."
 							});
 						}
@@ -91,6 +104,7 @@ $(function(){
 					});
 					//callback
 					fetchTagGifs = function(data) {
+						console.log(data)
 						var posts = data.response;
 						for (var i = 0; i < posts.length; i++) {
 							if (posts[i].photos) {
@@ -103,6 +117,12 @@ $(function(){
 							var last = data.response[data.response.length-1];
 							var timeStamp = last.timestamp;
 							self.fetchMoreGifs(timeStamp);
+						}
+						if (posts.length < 1) {
+							new ErrorView({
+								title: "Bummer",
+								message: "Couldn't find any "+self.options.tag+" gifs."
+							});
 						}
 					}
 				}
@@ -137,7 +157,7 @@ $(function(){
 				}
 				//tag
 				if (this.options.tag) {
-					$.ajax({
+					self.fetchMoreTagsAjax = $.ajax({
 					    type: 'GET',
 					    url: "http://api.tumblr.com/v2/tagged?",
 					    dataType: 'jsonp',
@@ -205,6 +225,10 @@ $(function(){
 				} else {
 					$('#gifs .gif:first').removeClass('hide').addClass('active');
 				}
+				if ($("input#query").is(":visible")) {
+					$("input#query").hide();
+				}
+				_gaq.push(['_trackPageview']);
 			},
 			previous: function() {
 				var current = $('#gifs .active');
@@ -232,6 +256,10 @@ $(function(){
 					}
 					last.removeClass('hide').addClass('active');
 				}
+				if ($("input#query").is(":visible")) {
+					$("input#query").hide();
+				}
+				_gaq.push(['_trackPageview']);
 			},
 			keydown: function(e) {
 				var self = this;
@@ -255,7 +283,20 @@ $(function(){
 					//show first gif
 					var first = $("#gifs .gif:first");
 					first.addClass('active').removeClass('hide');
+					//show alert
+					new AlertView();
 				}
+			},
+			checkInput: function() {
+				var x = $("input#query");
+				x.toggle();
+				if (x.is(":visible")) {
+					x.hide();
+					x.val("");
+				}
+			},
+			reset: function() {
+				$(document).unbind('keydown', this.keydown);
 			}
 		});
 		
@@ -263,19 +304,19 @@ $(function(){
 		LoadingView = Backbone.View.extend({
 			initialize: function() {
 				var opts = {
-				  lines: 13, // The number of lines to draw
-				  length: 30, // The length of each line
-				  width: 10, // The line thickness
-				  radius: 40, // The radius of the inner circle
-				  corners: 1, // Corner roundness (0..1)
+				  lines: 12, // The number of lines to draw
+				  length: 42, // The length of each line
+				  width: 20, // The line thickness
+				  radius: 74, // The radius of the inner circle
+				  corners: 0.1, // Corner roundness (0..1)
 				  rotate: 0, // The rotation offset
-				  color: '#000', // #rgb or #rrggbb
-				  speed: 1, // Rounds per second
-				  trail: 60, // Afterglow percentage
-				  shadow: true, // Whether to render a shadow
+				  color: '#999', // #rgb or #rrggbb
+				  speed: 0.7, // Rounds per second
+				  trail: 100, // Afterglow percentage
+				  shadow: false, // Whether to render a shadow
 				  hwaccel: false, // Whether to use hardware acceleration
 				  className: 'spinner', // The CSS class to assign to the spinner
-				  zIndex: 2e9, // The z-index (defaults to 2000000000)
+				  zIndex: 0, // The z-index (defaults to 2000000000)
 				  top: 'auto', // Top position relative to parent in px
 				  left: 'auto' // Left position relative to parent in px
 				};
@@ -290,6 +331,7 @@ $(function(){
 			template: _.template($('#error-template').html()),
 			initialize: function() {
 			    _.bindAll(this);
+				$("#loading").remove();
 			    $('.empty').empty();
 				this.render();
 			},
@@ -302,6 +344,27 @@ $(function(){
 			}
 		});
 		
+		//alert view
+		AlertView = Backbone.View.extend({
+			el: $('#alert'),
+			template: _.template($('#alert-template').html()),
+			initialize: function() {
+			    _.bindAll(this, "remove");
+				this.render();
+			},
+			render: function() {
+				var self = this;
+			  	$(this.el).html(this.template());
+				$(window).one("click", function() {
+					self.remove();
+				});
+				$(document).on('keydown', self.remove);
+			},
+			remove: function() {
+				$('#alert').remove();
+			}
+		});
+		
 	//end views	
 	
 	//router
@@ -310,17 +373,22 @@ $(function(){
 			routes: {
 				"" : "home",
 				":query" : "tumblr",
-				"http://:query" : "tumblr"
+				"http://:query" : "tumblr",
+				"?url=:query" : "tumblr"
 			},
 			initialize: function() {
-
+				new SearchView();
 		    },
 			home: function() {
-				new SearchView();
+				this.tumblr(0);
 			},
 			tumblr: function(query) {
+				if (query === 0) {
+					var query = "gif"
+				} 
 				if (this.currentTumblrView) {
-					this.currentTumblrView.undelegateEvents();
+					this.currentTumblrView.reset();
+					this.currentTumblrView.undelegateEvents(); 
 				}
 				if (query.indexOf('.') > -1) {
 					if (query.indexOf('http://') > -1) {

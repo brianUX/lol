@@ -5,35 +5,28 @@
 <head>
 	<meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
-  <title>Lolwtfgif, brah.</title>
+  <title>Lolwtfgif</title>
 
   <link rel="stylesheet" href="css/normalize.css" />
-  
   <link rel="stylesheet" href="css/app.css" />
-  
+  <link rel="stylesheet" href="css/glyphicons.css">
 
   <script src="js/vendor/custom.modernizr.js"></script>
 
 </head>
 <body>
 	
+	<div id="alert"></div>
 	<div id="search"></div>
 	<div id="error" class="empty"></div>
 	<div id="gifs" class="empty"></div>
 	<div id="loading"></div>
 	
 	<script type="text/template" id="search-template">
-		<div id="input">
-			<div class="wrapper">
-				<a class="logo" href="/"><img src="img/logo.png"></a>
-				<form>
-					<input type="text" placeholder="Enter tumblr url or search term">
-				</form>
-				<div class="welcome">
-					<p>create a fullscreen animated gif gallery from any tumblog.</p>
-				</div>
-			</div>
-		</div>
+		<a class="glyphicons search white"><i></i></a>
+		<form>
+			<input id="query" type="text" data-test="fadeInLeft" placeholder="Search a tag or enter a tumblr url.">
+		</form>
 	</script>
 	
 	<script type="text/template" id="gif-template">
@@ -53,7 +46,7 @@
 	
 	<script type="text/template" id="alert-template">
 		<div data-alert class="alert-box">
-		  Keep clicking anywhere to cycle through. Or use the &larr; &amp; &rarr; arrow keys. 
+		  Keep clicking anywhere to see the next gif. Or use the &larr; and &rarr; arrow keys. 
 		  <a href="#" class="close">&times;</a>
 		</div>
 	</script>
@@ -80,6 +73,13 @@
 
 	<script>
 	$(document).foundation();
+	</script>
+	
+	<script>
+		var _gaq=[['_setAccount','UA-31269984-1'],['_trackPageview']];
+		(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+		g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+		s.parentNode.insertBefore(g,s)}(document,'script'));
 	</script>
 
 </body>

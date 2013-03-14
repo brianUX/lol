@@ -1,9 +1,79 @@
 @import "compass";
 @import "settings";
 @import "foundation";
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400);
 
 body {
-	background:#1e1e1e;
+	background:#f3f3f3;
+	font-family: 'Source Sans Pro', sans-serif;
+}
+
+#alert div {
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:108px;
+	z-index:9999999999;
+	border:none;
+	font-size:3em;
+	color:#f9f9f9;
+	text-align: center;
+	line-height: 1.2em;
+	background: rgba(0,0,0,0.99);
+	padding-top:0.5em;
+	.close {
+		font-size: 1.775em;
+		top: 0.6em;
+		color:#fff;
+	}
+}
+
+#search {
+	position:absolute;
+	top:20px;
+	left:20px;
+	z-index:666;
+	a {
+		background: rgba(0,0,0,0.5);
+		color:#f9f9f9;
+		padding:0;
+		width:68px;
+		height:68px;
+		float:left;
+		@include border-radius(2px);
+		@include text-shadow(0px -1px 0 black);
+		&:hover {
+			background: rgba(0,0,0,0.7);
+			cursor:pointer;
+		}
+		i::before {
+			left: 0.74em;
+			top: 0.77em;
+			font: 27px/1em "Glyphicons";
+			&:hover {
+				color:#fff;
+			}
+		}
+	}
+	input {
+		display:none;
+		color:#333;
+		float:left;
+		height: 68px;
+		width: 370px;
+		border:none;
+		background: rgba(255,255,255,0.9);
+		padding: 0 24px;
+		font-size:1.1em;
+		font-weight:400;
+		@include border-radius(0px 2px 2px 0px);
+		@include text-shadow(1px 1px 0 white);
+	}
+	form {
+		margin:0;
+		float:right;
+	}
 }
 
 .gif {
@@ -12,7 +82,7 @@ body {
   	left: -50%; 
   	width: 200%; 
 	height: 200%;
-	z-index:99999999999;
+	z-index:555;
 	img {
 		position: absolute; 
 	  	top: 0; 
@@ -32,28 +102,52 @@ body {
 	.tags {
 		position: fixed;
 		bottom: 20px;
-		left: 20px;
+		left: 0;
+		width: 100%;
+		padding: 0 20px;
 		z-index: 99999999999;
 		.tag {
-			float:left;
-			margin-right:10px;
+			color:#f9f9f9;
+			float: left;
+			margin:10px 16px 0 0;
+			border-radius: 2px;
+			padding: 0.4875em 0.825em 0.55em;
+			background: rgba(0,0,0,0.5);
+			font-size: 1.1em;
+			font-weight:400;
+			@include text-shadow(0px -1px 0 black);
+			&:hover {
+				color:#fff;
+				background: rgba(0,0,0,0.7);
+			}
+			&:active {
+				position:relative;
+				top:1px;
+			}
 		}
 	}
 }
 
-#error, #error h1 {
-	color:#fff;
+#error {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-top: -100px;
+	margin-left: -150px;
+	color:#555;
+	text-align: center;
+	@include text-shadow(1px 1px 0 white);
+	h1 {
+		font-size:3.3em;
+	}
 }
 
 #loading {
-	z-index: -9999999;
-	width: 200px;
-	margin: 0 auto;
-	position: relative;
-	top: 200px;
-	.spinner div div {
-		background-color:#f9f9f9 !important;
-	}
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-top: -50px;
+	margin-left: 0;
 }
 
 
@@ -160,4 +254,43 @@ body {
 	}
 }
 
+@media (max-width: 1700px) { 
+	#alert div {
+		font-size:2.5em;
+		padding-top:0.7em;
+		.close {
+			top: 0.72em;
+		}
+	}
+}
+
+@media (max-width: 1500px) { 
+	#alert div {
+		font-size: 2.0em;
+		padding-top: 0.94em;
+		.close {
+			top: 0.84em;
+		}
+	}
+}
+
+@media (max-width: 1200px) { 
+	#alert div {
+		font-size: 1.6em;
+		padding-top: 1.45em;
+		.close {
+			top: 1.05em;
+		}
+	}
+}
+
+@media (max-width: 1000px) { 
+	#alert div {
+		font-size: 1.2em;
+		padding-top: 1.4em;
+		.close {
+			top: 0.2em;
+		}
+	}
+}
 
