@@ -28,7 +28,7 @@ $(function(){
 				x.toggle();
 				if (x.is(":visible")) {
 					x.focus();
-					x.select();
+					x.val("");
 				}
 			}
 		});
@@ -361,7 +361,7 @@ $(function(){
 				$(document).on('keydown', self.remove);
 			},
 			remove: function() {
-				$('#alert').remove();
+				$('#alert').fadeOut();
 			}
 		});
 		
