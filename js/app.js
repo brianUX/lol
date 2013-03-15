@@ -193,7 +193,6 @@ $(function(){
 			},
 			fetchRedditGifs: function() {
 				var self = this;
-				$("#gifs").empty();
 				$.getJSON("http://www.reddit.com/search.json?q=" + this.options.tag + "+gif&sort=hot&restrict_sr=off&limit=100&t=all&jsonp=?", {format: "jsonp"}, 
 					function(data) {
 						var gifs = data.data.children;
