@@ -196,7 +196,6 @@ $(function(){
 				$.getJSON("http://www.reddit.com/search.json?q=" + this.options.tag + "+gif&sort=hot&restrict_sr=off&limit=100&t=all&jsonp=?", {format: "jsonp"}, 
 					function(data) {
 						var gifs = data.data.children;
-						console.log(gifs)
 						if (gifs.length > 0) {
 							self.render(gifs,null,0,2);
 						} else {
@@ -234,12 +233,6 @@ $(function(){
 								tags: [""+this.options.tag+""]
 							}
 							$(self.el).append(self.template(data));
-						} else {
-							new ErrorView({
-								title: "Bummer.",
-								message: "Couldn't find any <strong>"+self.options.tag+"</strong> gifs."
-							});
-							return false;
 						}
 						self.firstGif();
 					}
@@ -325,7 +318,9 @@ $(function(){
 					var first = $("#gifs .gif:first");
 					first.addClass('active').removeClass('hide');
 					//show alert
-					new AlertView();
+					if ($("#gifs .gif").size() > 0) {
+						new AlertView();
+					}
 				}
 			},
 			checkInput: function() {
