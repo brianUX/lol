@@ -193,9 +193,7 @@ $(function(){
 			},
 			fetchRedditGifs: function() {
 				var self = this;
-				var url = "http://www.reddit.com/search.json?q=" + this.options.tag + "+gif&sort=hot&restrict_sr=off&limit=100&t=all&jsonp=?";
-				console.log(url)
-				$.getJSON(url, {format: "jsonp"}, 
+				$.getJSON("http://www.reddit.com/search.json?q=" + this.options.tag + "+gif&sort=hot&restrict_sr=off&limit=100&t=all&jsonp=?", {format: "jsonp"}, 
 					function(data) {
 						var gifs = data.data.children;
 						self.render(gifs,null,0,2);
