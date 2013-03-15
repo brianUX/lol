@@ -40,7 +40,7 @@ $(function(){
 				"click img" : "next"
 			},
 			initialize: function() {
-				_.bindAll(this, "fetchGifs", "next", "previous", "keydown", "fetchMoreGifs", "firstGif", "reset");
+				_.bindAll(this, "fetchGifs", "next", "previous", "keydown", "fetchMoreGifs", "firstGif", "reset", "fetchRedditGifs");
 				$(document).on('keydown', this.keydown);
 				$('.empty').empty();
 				this.fetchGifs();
@@ -71,7 +71,7 @@ $(function(){
 							for (var i = 0; i < posts.length; i++) {
 								var photos = posts[i].photos;
 								var tags = posts[i].tags;
-								self.render(photos,tags,0);
+								self.render(photos,tags,0,1);
 							}
 							if (posts.length === 50) {
 								self.fetchMoreGifs(data.response.total_posts);
@@ -109,7 +109,7 @@ $(function(){
 							if (posts[i].photos) {
 								var photos = posts[i].photos;
 								var tags = posts[i].tags;
-								self.render(photos,tags,0);
+								self.render(photos,tags,0,1);
 							}
 						}
 						if (posts.length > 0) {
@@ -118,10 +118,7 @@ $(function(){
 							self.fetchMoreGifs(timeStamp);
 						}
 						if (posts.length < 1) {
-							new ErrorView({
-								title: "Bummer.",
-								message: "Couldn't find any <strong>"+self.options.tag+"</strong> gifs."
-							});
+							self.fetchRedditGifs();
 						}
 					}
 				}
@@ -154,7 +151,7 @@ $(function(){
 						for (var i = 0; i < posts.length; i++) {
 							var photos = posts[i].photos;
 							var tags = posts[i].tags;
-							self.render(photos,tags,1);
+							self.render(photos,tags,1,1);
 						}
 					}
 				}
@@ -178,7 +175,7 @@ $(function(){
 							if (posts[i].photos) {
 								var photos = posts[i].photos;
 								var tags = posts[i].tags;
-								self.render(photos,tags,1);
+								self.render(photos,tags,1,1);
 							}
 						}
 						if (data.response.length > 0) {
@@ -194,17 +191,46 @@ $(function(){
 					}
 				}
 			},
-			render: function(photos,tags,first) {
+			fetchRedditGifs: function() {
 				var self = this;
-				for (var i = 0; i < photos.length; i++) {
-					if (photos[i].original_size.url.indexOf('.gif') > 0) {
-						var data = {
-							src: photos[i].original_size.url,
-							tags: tags
+				var url = "http://www.reddit.com/search.json?q=" + this.options.tag + "+gif&sort=hot&restrict_sr=off&limit=100&t=all&jsonp=?";
+				console.log(url)
+				$.getJSON(url, {format: "jsonp"}, 
+					function(data) {
+						var gifs = data.data.children;
+						self.render(gifs,null,0,2);
+			    	}
+				).error(function() {
+					new ErrorView({
+						title: "Bummer.",
+						message: "Couldn't find any <strong>"+self.options.tag+"</strong> gifs."
+					});
+				});
+			},
+			render: function(photos,tags,first,source) {
+				var self = this;
+				if (source === 1) {
+					for (var i = 0; i < photos.length; i++) {
+						if (photos[i].original_size.url.indexOf('.gif') > 0) {
+							var data = {
+								src: photos[i].original_size.url,
+								tags: tags
+							}
+							$(self.el).append(self.template(data));
 						}
-						$(self.el).append(self.template(data));
+						self.firstGif();
 					}
-					self.firstGif();
+				} else if (source === 2) {
+					for (var i = 0; i < photos.length; i++) {
+						if (photos[i].data.url.indexOf('.gif') > 0) {
+							var data = {
+								src: photos[i].data.url,
+								tags: [""+this.options.tag+""]
+							}
+							$(self.el).append(self.template(data));
+						}
+						self.firstGif();
+					}
 				}
 			},
 			next: function() {
