@@ -388,7 +388,7 @@ $(function(){
 			},
 			initialize: function() {
 				new SearchView();
-				this.catch();
+				this.params();
 		    },
 			home: function() {
 				this.tumblr(0);
@@ -397,6 +397,9 @@ $(function(){
 				if (query === 0) {
 					var query = "gif"
 				} 
+				if (this.url) {
+					var query = this.url;
+				}
 				if (this.currentTumblrView) {
 					this.currentTumblrView.reset();
 					this.currentTumblrView.undelegateEvents(); 
@@ -415,7 +418,7 @@ $(function(){
 				}
 				this.currentTumblrView = view;
 			},
-			catch: function() {
+			params: function() {
 				var self = this;
 				var urlParams = {};
 				(function() {
@@ -428,10 +431,7 @@ $(function(){
 				    while (e = r.exec(q))
 				       urlParams[d(e[1])] = d(e[2]);
 				})();
-				url = urlParams['url'];
-				if (url) {
-					this.tumblr(url);
-				} 
+				this.url = urlParams['url'];
 			}
 		});
 	
