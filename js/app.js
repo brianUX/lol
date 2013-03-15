@@ -105,19 +105,19 @@ $(function(){
 					//callback
 					fetchTagGifs = function(data) {
 						var posts = data.response;
-						for (var i = 0; i < posts.length; i++) {
-							if (posts[i].photos) {
-								var photos = posts[i].photos;
-								var tags = posts[i].tags;
-								self.render(photos,tags,0,1);
-							}
-						}
 						if (posts.length > 0) {
+							for (var i = 0; i < posts.length; i++) {
+								if (posts[i].photos) {
+									var photos = posts[i].photos;
+									var tags = posts[i].tags;
+									self.render(photos,tags,0,1);
+								}
+							}
 							var last = data.response[data.response.length-1];
 							var timeStamp = last.timestamp;
 							self.fetchMoreGifs(timeStamp);
 						}
-						if (posts.length < 1) {
+						else {
 							self.fetchRedditGifs();
 						}
 					}
@@ -193,6 +193,7 @@ $(function(){
 			},
 			fetchRedditGifs: function() {
 				var self = this;
+				$("#gifs").empty();
 				$.getJSON("http://www.reddit.com/search.json?q=" + this.options.tag + "+gif&sort=hot&restrict_sr=off&limit=100&t=all&jsonp=?", {format: "jsonp"}, 
 					function(data) {
 						var gifs = data.data.children;
