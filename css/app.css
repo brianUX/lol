@@ -5257,7 +5257,7 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  margin-top: -50px;
+  margin-top: 0;
   margin-left: 0;
 }
 

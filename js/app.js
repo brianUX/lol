@@ -119,8 +119,8 @@ $(function(){
 						}
 						if (posts.length < 1) {
 							new ErrorView({
-								title: "Bummer",
-								message: "Couldn't find any "+self.options.tag+" gifs."
+								title: "Bummer.",
+								message: "Couldn't find any <strong>"+self.options.tag+"</strong> gifs."
 							});
 						}
 					}
