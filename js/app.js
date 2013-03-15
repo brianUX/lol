@@ -128,6 +128,10 @@ $(function(){
 			},
 			fetchMoreGifs: function(count) {
 				var self = this;
+				if (this.ajaxClear) {
+					$("#gifs").empty();
+					return false;
+				}
 				//tumblr
 				if (this.options.url) {
 					for (var i = 50; i < count; i = i+50) {
@@ -296,6 +300,7 @@ $(function(){
 			},
 			reset: function() {
 				$(document).unbind('keydown', this.keydown);
+				this.ajaxClear = 1;
 			}
 		});
 		
@@ -426,7 +431,7 @@ $(function(){
 				url = urlParams['url'];
 				if (url) {
 					this.tumblr(url);
-				}
+				} 
 			}
 		});
 	
