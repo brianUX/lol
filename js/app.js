@@ -119,6 +119,7 @@ $(function(){
 						}
 						else {
 							self.fetchRedditGifs();
+							this.ajaxClear = 1;
 						}
 					}
 				}
