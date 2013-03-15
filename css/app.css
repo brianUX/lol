@@ -5237,18 +5237,22 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  margin-top: -100px;
-  margin-left: -150px;
+  margin-top: -90px;
+  margin-left: -130px;
   color: #555;
   text-align: center;
   text-shadow: 1px 1px 0 white;
 }
 /* line 142, ../scss/app.scss */
 #error h1 {
-  font-size: 3.3em;
+  font-size: 4em;
+}
+/* line 145, ../scss/app.scss */
+#error p {
+  font-size: 1.5em;
 }
 
-/* line 147, ../scss/app.scss */
+/* line 150, ../scss/app.scss */
 #loading {
   position: fixed;
   top: 50%;
@@ -5258,45 +5262,45 @@ body {
 }
 
 @media (max-width: 1700px) {
-  /* line 157, ../scss/app.scss */
+  /* line 160, ../scss/app.scss */
   #alert div {
     font-size: 2.5em;
     padding-top: 0.7em;
   }
-  /* line 160, ../scss/app.scss */
+  /* line 163, ../scss/app.scss */
   #alert div .close {
     top: 0.72em;
   }
 }
 @media (max-width: 1500px) {
-  /* line 167, ../scss/app.scss */
+  /* line 170, ../scss/app.scss */
   #alert div {
     font-size: 2.0em;
     padding-top: 0.94em;
   }
-  /* line 170, ../scss/app.scss */
+  /* line 173, ../scss/app.scss */
   #alert div .close {
     top: 0.84em;
   }
 }
 @media (max-width: 1200px) {
-  /* line 177, ../scss/app.scss */
+  /* line 180, ../scss/app.scss */
   #alert div {
     font-size: 1.6em;
     padding-top: 1.45em;
   }
-  /* line 180, ../scss/app.scss */
+  /* line 183, ../scss/app.scss */
   #alert div .close {
     top: 1.05em;
   }
 }
 @media (max-width: 1000px) {
-  /* line 187, ../scss/app.scss */
+  /* line 190, ../scss/app.scss */
   #alert div {
     font-size: 1.2em;
     padding-top: 1.4em;
   }
-  /* line 190, ../scss/app.scss */
+  /* line 193, ../scss/app.scss */
   #alert div .close {
     top: 0.2em;
   }
