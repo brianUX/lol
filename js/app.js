@@ -372,7 +372,7 @@ $(function(){
 		//page view
 		PageView = Backbone.View.extend({
 			initialize: function() {
-				_gaq.push(['_trackPageview', window.location.pathname]);
+				_gaq.push(['_trackPageview', window.location.href]);
 			}
 		})
 		
