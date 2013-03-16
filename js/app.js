@@ -435,6 +435,7 @@ $(function(){
 				// if legacy url
 				if (this.url) {
 					var query = this.url;
+					window.location = "/#/"+query+"";
 				}
 				//if another view is open
 				if (this.currentTumblrView) {
