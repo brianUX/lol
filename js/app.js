@@ -41,11 +41,12 @@ $(function(){
 			},
 			initialize: function() {
 				_.bindAll(this, "fetchGifs", "next", "previous", "keydown", "fetchMoreGifs", "firstGif", "reset", "fetchRedditGifs");
+				//bind key events
 				$(document).on('keydown', this.keydown);
 				$('.empty').empty();
 				this.fetchGifs();
-				new LoadingView();
 				this.checkInput();
+				new LoadingView();
 				new PageView();
 			},
 			fetchGifs: function() {				
@@ -427,16 +428,20 @@ $(function(){
 				this.tumblr(0);
 			},
 			tumblr: function(query) {
+				//if home page
 				if (query === 0) {
 					var query = "gif"
 				} 
+				// if legacy url
 				if (this.url) {
 					var query = this.url;
 				}
+				//if another view is open
 				if (this.currentTumblrView) {
 					this.currentTumblrView.reset();
 					this.currentTumblrView.undelegateEvents(); 
 				}
+				//if url else tag
 				if (query.indexOf('.') > -1) {
 					if (query.indexOf('http://') > -1) {
 						query.replace("http://", "");
