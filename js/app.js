@@ -19,7 +19,6 @@ $(function(){
 			search: function() {
 				var query = $('input#query').val();
 				var query = query.replace(/\s+/g, '-').toLowerCase();
-				console.log(query)
 			    app.navigate("#/"+query+"", {trigger: true});
 				return false;
 			},
@@ -126,6 +125,7 @@ $(function(){
 			},
 			fetchMoreGifs: function(count) {
 				var self = this;
+				//check for ajax kill variable
 				if (this.ajaxClear) {
 					$("#gifs").empty();
 					return false;
@@ -224,7 +224,10 @@ $(function(){
 							}
 							$(self.el).append(self.template(data));
 						}
-						self.firstGif();
+						if (!(self.popped)) {
+							self.firstGif();
+						}
+						self.popped = 1;
 					}
 				} else if (source === 2) {
 					for (var i = 0; i < photos.length; i++) {
@@ -235,7 +238,10 @@ $(function(){
 							}
 							$(self.el).append(self.template(data));
 						}
-						self.firstGif();
+						if (!(self.popped)) {
+							self.firstGif();
+						}
+						self.popped = 1;
 					}
 				}
 			},
@@ -319,7 +325,7 @@ $(function(){
 					var first = $("#gifs .gif:first");
 					first.addClass('active').removeClass('hide');
 					//show alert
-					if ($("#gifs .gif:visible").size() > 0) {
+					if ($("#gifs .active:visible").size() > 0) {
 						new AlertView();
 					}
 				}
