@@ -224,10 +224,7 @@ $(function(){
 							}
 							$(self.el).append(self.template(data));
 						}
-						if (!(self.popped)) {
-							self.firstGif();
-						}
-						self.popped = 1;
+						self.firstGif();
 					}
 				} else if (source === 2) {
 					for (var i = 0; i < photos.length; i++) {
@@ -238,10 +235,7 @@ $(function(){
 							}
 							$(self.el).append(self.template(data));
 						}
-						if (!(self.popped)) {
-							self.firstGif();
-						}
-						self.popped = 1;
+						self.firstGif();
 					}
 				}
 			},
