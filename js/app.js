@@ -18,8 +18,8 @@ $(function(){
 			},
 			search: function() {
 				var query = $('input#query').val();
-				query.replace(/\s+/g, '+').toLowerCase();
-				//check if url or tag
+				var query = query.replace(/\s+/g, '-').toLowerCase();
+				console.log(query)
 			    app.navigate("#/"+query+"", {trigger: true});
 				return false;
 			},
@@ -319,7 +319,7 @@ $(function(){
 					var first = $("#gifs .gif:first");
 					first.addClass('active').removeClass('hide');
 					//show alert
-					if ($("#gifs .gif").size() > 0) {
+					if ($("#gifs .gif:visible").size() > 0) {
 						new AlertView();
 					}
 				}
