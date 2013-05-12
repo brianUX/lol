@@ -338,6 +338,18 @@ $(function(){
 			}
 		});
 		
+		//reddit view
+		// RedditView = Backnone.View.extend({
+		// 	el: $('#gifs'),
+		// 	template: _.template($('#gif-template').html()),
+		// 	events: {
+		// 		"click img" : "next"
+		// 	},
+		// 	initialize: function() {
+		// 		_.bindAll(this);
+		// 	}
+		// });
+		
 		//loading view
 		LoadingView = Backbone.View.extend({
 			initialize: function() {
@@ -418,7 +430,8 @@ $(function(){
 			routes: {
 				"" : "home",
 				":query" : "tumblr",
-				"http://:query" : "tumblr"
+				"http://:query" : "tumblr",
+				"r/:subreddit" : "reddit"
 			},
 			initialize: function() {
 				new SearchView();
