@@ -45,8 +45,8 @@ $(function(){
 				$('.empty').empty();
 				this.fetchGifs();
 				this.checkInput();
-				new LoadingView();
 				new PageView();
+				$('#loading').addClass('animated fadeIn').show();
 			},
 			fetchGifs: function() {				
 				var self = this;
@@ -486,6 +486,7 @@ $(function(){
 					});
 				}
 				this.currentTumblrView = view;
+				new LoadingView();
 			},
 			params: function() {
 				var self = this;
