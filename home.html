@@ -6,6 +6,7 @@
 	<meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lolwtfgif</title>
+	<meta name="description" content="Fullscreen gifs in your face">
 	<meta property="og:title" content="Lolwtfgif - fullscreen animated gifs"/>
 	<meta property="og:site_name" content="lolwtfgif"/>
 	<meta property="og:description" content="Giftastical."/>
@@ -17,7 +18,7 @@
 <body>
 	
 	<div id="alert"></div>
-	<div id="search"></div>
+	<div id="search" class="animated fadeIn"></div>
 	<div id="error" class="empty"></div>
 	<div id="gifs" class="empty"></div>
 	<div id="loading" class="empty"></div>
@@ -25,7 +26,7 @@
 	<script type="text/template" id="search-template">
 		<a class="glyphicons search white"><i></i></a>
 		<form>
-			<input id="query" type="text" data-test="fadeInLeft" placeholder="Search a tag or enter a tumblr url.">
+			<input id="query" class="animated fadeIn" type="text" placeholder="Search a tag or enter a tumblr url.">
 		</form>
 	</script>
 	
@@ -33,14 +34,14 @@
 			<div class="gif unloaded hide" id="<%= src %>">
 				<% if (tags) { %>
 					<% if (tags.length > 0) { %>
-						<div class="tags">
+						<div class="tags animated fadeIn">
 							<% for (var i = 0; i < tags.length; i++) { %>
 								<a href="#/<%= tags[i].replace(/\s+/g, '-').toLowerCase() %>" class="label tag"><%= tags[i].toLowerCase() %></a>
 							<% } %>
 						</div>
 					<% } %>
 				<% } %>
-				<img src="">
+				<img src="" class="animated fadeIn">
 			</div>
 	</script>
 	

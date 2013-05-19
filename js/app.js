@@ -322,6 +322,8 @@ $(function(){
 					if ($("#gifs .active:visible").size() > 0) {
 						new AlertView();
 					}
+					//hide loading
+					$('#loading').hide();
 				}
 			},
 			checkInput: function() {
@@ -355,9 +357,9 @@ $(function(){
 			initialize: function() {
 				var opts = {
 				  lines: 12, // The number of lines to draw
-				  length: 42, // The length of each line
-				  width: 20, // The line thickness
-				  radius: 74, // The radius of the inner circle
+				  length: 21, // The length of each line
+				  width: 10, // The line thickness
+				  radius: 37, // The radius of the inner circle
 				  corners: 0.1, // Corner roundness (0..1)
 				  rotate: 0, // The rotation offset
 				  color: '#999', // #rgb or #rrggbb
@@ -400,7 +402,18 @@ $(function(){
 			template: _.template($('#alert-template').html()),
 			initialize: function() {
 			    _.bindAll(this, "remove");
-				this.render();
+				//check if new visitor
+				if (document.cookie.indexOf("visited") >= 0) {
+
+				}
+				else {
+					this.render();
+					// set a new cookie
+					expiry = new Date();
+					expiry.setTime(expiry.getTime()+(3600 * 1000 * 24 * 365 * 10)); // one year
+					// Date()'s toGMTSting() method will format the date correctly for a cookie
+					document.cookie = "visited=yes; expires=" + expiry.toGMTString();
+				}
 			},
 			render: function() {
 				var self = this;
@@ -409,9 +422,13 @@ $(function(){
 					self.remove();
 				});
 				$(document).on('keydown', self.remove);
+				setTimeout(function() {
+					self.remove();
+				}, 2800);
+				
 			},
 			remove: function() {
-				$('#alert').fadeOut();
+				$('#alert div').addClass('animated fadeOutUpBig');
 			}
 		});
 		

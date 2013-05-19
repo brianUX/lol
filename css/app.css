@@ -5081,7 +5081,7 @@ table tfoot tr td {
 
 /* line 6, ../scss/app.scss */
 body {
-  background: #f3f3f3;
+  background: #0c0c0c;
   font-family: "Source Sans Pro", sans-serif;
 }
 
@@ -5098,7 +5098,7 @@ body {
   color: #f9f9f9;
   text-align: center;
   line-height: 1.2em;
-  background: rgba(0, 0, 0, 0.99);
+  background: rgba(0, 0, 0, 0.8);
   padding-top: 0.5em;
 }
 /* line 25, ../scss/app.scss */
