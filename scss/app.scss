@@ -1,5 +1,4 @@
 @import "compass";
-@import "settings";
 @import "foundation";
 @import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400);
 
@@ -136,11 +135,12 @@ body {
 	left: 50%;
 	margin-top: -90px;
 	margin-left: -130px;
-	color:#555;
+	color:#ccc;
 	text-align: center;
-	@include text-shadow(1px 1px 0 white);
+	@include text-shadow(0 -1px 0 black);
 	h1 {
 		font-size:4em;
+		color:#ccc;
 	}
 	p {
 		font-size:1.5em;

@@ -477,6 +477,9 @@ $(function(){
 					if (query.indexOf('http://') > -1) {
 						query.replace("http://", "");
 					}
+					if (query.indexOf('www.') > -1) {
+						query.replace("www.", "");
+					}
 					var view = new TumblrView({
 						url: query
 					});
